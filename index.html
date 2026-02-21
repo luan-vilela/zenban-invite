@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Entrar no ZenBan</title>
+    <meta property="og:title" content="Você foi convidado para um espaço no ZenBan!" />
+    <meta property="og:description" content="Toque para abrir o ZenBan e entrar no espaço." />
+    <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: #0f172a;
+        color: #f8fafc;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+      }
+      .card {
+        background: #1e293b;
+        border-radius: 20px;
+        padding: 40px 32px;
+        max-width: 400px;
+        width: 100%;
+        text-align: center;
+        box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+      }
+      .logo {
+        font-size: 48px;
+        margin-bottom: 16px;
+      }
+      h1 {
+        font-size: 22px;
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: #f1f5f9;
+      }
+      p {
+        color: #94a3b8;
+        font-size: 15px;
+        margin-bottom: 32px;
+        line-height: 1.5;
+      }
+      .btn {
+        display: block;
+        background: #6366f1;
+        color: #fff;
+        text-decoration: none;
+        border: none;
+        border-radius: 12px;
+        padding: 16px 24px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        width: 100%;
+        margin-bottom: 12px;
+        transition: background 0.2s;
+      }
+      .btn:hover { background: #4f46e5; }
+      .btn-secondary {
+        background: #334155;
+        color: #94a3b8;
+        font-size: 14px;
+        padding: 12px 24px;
+      }
+      .btn-secondary:hover { background: #475569; }
+      .code-box {
+        background: #0f172a;
+        border-radius: 10px;
+        padding: 14px 20px;
+        font-family: monospace;
+        font-size: 22px;
+        letter-spacing: 4px;
+        color: #e2e8f0;
+        margin: 20px 0;
+        border: 1px solid #334155;
+      }
+      .hint {
+        color: #475569;
+        font-size: 13px;
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="logo">🗂️</div>
+      <h1>Convite para o ZenBan</h1>
+      <p>Você foi convidado para entrar em um espaço.<br />Toque no botão abaixo para abrir o app.</p>
+      <div class="code-box" id="code-display">...</div>
+      <button class="btn" id="open-btn" onclick="openApp()">Abrir no ZenBan</button>
+      <button class="btn btn-secondary" id="copy-btn" onclick="copyCode()">Copiar código</button>
+      <p class="hint" id="hint-text">Caso não abra, copie o código e cole no app em "Entrar em um espaço".</p>
+    </div>
+
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      const code = params.get("code") || "";
+      const deepLink = "zenban://join?code=" + code;
+
+      document.getElementById("code-display").textContent = code || "—";
+
+      function openApp() {
+        if (!code) return;
+        window.location.href = deepLink;
+        // Fallback: if app not installed, nothing happens — user copies code
+      }
+
+      function copyCode() {
+        if (!code) return;
+        navigator.clipboard.writeText(code).then(() => {
+          const btn = document.getElementById("copy-btn");
+          btn.textContent = "✓ Copiado!";
+          setTimeout(() => { btn.textContent = "Copiar código"; }, 2000);
+        }).catch(() => {
+          // Fallback para devices sem clipboard API
+          const el = document.createElement("textarea");
+          el.value = code;
+          document.body.appendChild(el);
+          el.select();
+          document.execCommand("copy");
+          document.body.removeChild(el);
+        });
+      }
+
+      // Auto-abre em mobile após breve delay
+      if (/Android|iPhone|iPad/i.test(navigator.userAgent) && code) {
+        setTimeout(openApp, 600);
+      }
+    </script>
+  </body>
+</html>
+
